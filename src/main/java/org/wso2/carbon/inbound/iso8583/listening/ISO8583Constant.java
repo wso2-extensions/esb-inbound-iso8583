@@ -36,5 +36,10 @@ public class ISO8583Constant {
     public static final String INBOUND_THREAD_QLEN = "queueLength";
     public final static String ISO8583_INBOUND_MSG_ID = "ISO8583_INBOUND_MSG_ID";
     public final static String PROPERTIES_FILE = "config.properties";
+    public static final String RESPONSE_FIELD = "responseField";
+    public static final String SUCCESSFUL_RESPONSE_CODE = "successfulResponseCode";
+    public static final String FAILURE_RESPONSE_CODE = "failureResponseCode";
+    public static final Object REQUEST_MTI = "requestMTI";
+    public static final Object RESPONSE_MTI = "responseMTI";
     public static final int DEFAULT_RETRY_INTERVAL = 10000;
 }

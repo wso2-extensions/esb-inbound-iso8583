@@ -91,8 +91,7 @@ public class ConnectionRequestHandler implements Runnable {
             isoMsg.setPackager(packager);
             isoMsg.unpack(message.getBytes());
         } catch (ISOException e) {
-            handleISOException(message);
-            handleException("Couldn't unpack the message since financial message is not in ISO Standard", e);
+            handleISOException(message, e);
         }
         return isoMsg;
     }
@@ -102,9 +101,10 @@ public class ConnectionRequestHandler implements Runnable {
      *
      * @param message String ISOMessage
      */
-    private void handleISOException(String message) {
+    private void handleISOException(String message, ISOException e) {
         try {
             outToClient.writeBytes("Request ISO message is not in ISO Standard :" + message);
+            handleException("Couldn't unpack the message since financial message is not in ISO Standard", e);
         } catch (IOException e1) {
             handleException("OutputStream may be closed ", e1);
         }

@@ -47,7 +47,7 @@ public class ISO8583MessageConnection extends Thread {
     /**
      * create the threadPool to handle the concurrent request.
      */
-    public void getExecutorService() {
+    public ExecutorService getExecutorService() {
         Properties properties = params.getProperties();
         String coreThreads = properties.getProperty(ISO8583Constant.INBOUND_CORE_THREADS);
         String maxThreads = properties.getProperty(ISO8583Constant.INBOUND_MAX_THREADS);
@@ -69,26 +69,33 @@ public class ISO8583MessageConnection extends Thread {
         } catch (NumberFormatException e) {
             handleException("One of the property or properties of thread specified is of an invalid type", e);
         }
+        return threadPool;
     }
 
     /**
      * create the server socket which is to accept a connection from a client.
      */
-    private void createConnection() throws IOException {
-        server = new ServerSocket(port);
-        log.info("Server is listening on port :" + port);
-        while (!listening) {
-            Socket socketConnection = server.accept();
-            log.debug("Client connected to socket: " + socketConnection.toString());
-            handleClientRequest(socketConnection, params);
+    private void createSocket() {
+        try {
+            server = new ServerSocket(port);
+        } catch (IOException e) {
+            handleException("Server could not listen on port" + port, e);
         }
+        log.info("Server is listening on port :" + port);
     }
 
     public void run() {
         try {
-            createConnection();
+            createSocket();
+            while (!listening) {
+                Socket socketConnection = server.accept();
+                if (log.isDebugEnabled()) {
+                    log.debug("Client connected to socket: " + socketConnection.toString());
+                }
+                handleClientRequest(socketConnection, params);
+            }
         } catch (IOException e) {
-            log.warn("Exception occurred while create socket or accept the connections", e);
+            log.warn("Exception occurred while accept the connections", e);
             reCreateConnection();
         } finally {
             try {
@@ -104,23 +111,22 @@ public class ISO8583MessageConnection extends Thread {
      */
     private void reCreateConnection() {
         int retryInterval = ISO8583Constant.DEFAULT_RETRY_INTERVAL;
-        try {
-            if (!server.isClosed()) {
-                server.close();
-            }
-            if (server.isClosed()) {
-                log.info("Attempting to re create socket connections" + " in " + retryInterval + " ms");
-                try {
-                    Thread.sleep(retryInterval);
-                    createConnection();
-                } catch (InterruptedException e1) {
-                    log.error("Error while create socket connections" + " in " + retryInterval + " ms", e1);
-                } catch (IOException e2) {
-                    handleException("Server could not listen or accept any connections", e2);
+        if (!server.isClosed()) {
+            log.info("Attempting to re accept the connections" + " in " + retryInterval + " ms");
+            try {
+                Thread.sleep(retryInterval);
+                while (!listening) {
+                    Socket socketConnection = server.accept();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Client connected to socket: " + socketConnection.toString());
+                    }
+                    handleClientRequest(socketConnection, params);
                 }
+            } catch (InterruptedException e1) {
+                log.error("Error while create socket connections" + " in " + retryInterval + " ms", e1);
+            } catch (IOException e2) {
+                handleException("Server could not accept any connections", e2);
             }
-        } catch (IOException e) {
-            handleException("Couldn't close the server", e);
         }
     }
 
