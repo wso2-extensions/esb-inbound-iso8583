@@ -79,7 +79,7 @@ public class ISO8583MessageConnection extends Thread {
         try {
             server = new ServerSocket(port);
         } catch (IOException e) {
-            handleException("Server could not listen on port" + port, e);
+            handleException("Server could not listen on port " + port, e);
         }
         log.info("Server is listening on port :" + port);
     }
