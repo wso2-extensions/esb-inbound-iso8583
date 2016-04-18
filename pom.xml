@@ -21,7 +21,7 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.synapse.inbound</groupId>
     <artifactId>org.apache.synapse.iso8583.listening.class</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>ISO8583 listening</name>
     <url>http://wso2.org</url>
     <packaging>bundle</packaging>
@@ -47,6 +47,12 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
             <version>${org.jdom.version}</version>
         </dependency>
     </dependencies>
+    <scm>
+        <connection>scm:git:https://github.com/wso2-extensions/esb-inbound-iso8583.git</connection>
+        <url>https://github.com/wso2-extensions/esb-inbound-iso8583.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/esb-inbound-iso8583</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
     <repositories>
         <repository>
             <id>wso2-maven2-repository</id>
