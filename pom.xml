@@ -20,7 +20,7 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.synapse.inbound</groupId>
     <artifactId>org.wso2.carbon.inbound.iso8583</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>ISO8583 listening</name>
     <url>http://wso2.org</url>
     <packaging>bundle</packaging>
@@ -248,16 +248,16 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
         </resources>
     </build>
     <distributionManagement>
-         <repository>
+        <repository>
             <id>nexus-releases</id>
             <name>WSO2 Release Distribution Repository</name>
             <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
-         </repository>
-         <snapshotRepository>
+        </repository>
+        <snapshotRepository>
             <id>wso2.snapshots</id>
             <name>Apache Snapshot Repository</name>
             <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
-         </snapshotRepository>
+        </snapshotRepository>
     </distributionManagement>
     <properties>
         <org.jpos.version>1.9.4</org.jpos.version>
