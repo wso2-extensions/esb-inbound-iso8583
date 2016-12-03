@@ -128,7 +128,7 @@ public class ISO8583MessageConnection extends Thread {
             threadPool.execute(new ConnectionRequestHandler(connection, params));
         } catch (RejectedExecutionException re) {
             // If the pool is full complete the execution with the same thread
-            log.warn("Worker pool has reached the maximum capacity.");
+            log.warn("Worker pool has reached the maximum capacity.", re);
         }
     }
 
