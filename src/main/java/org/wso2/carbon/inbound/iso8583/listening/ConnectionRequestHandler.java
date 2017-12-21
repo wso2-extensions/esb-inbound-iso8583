@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.inbound.InboundProcessorParams;
+import org.jpos.iso.ISOBasePackager;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
@@ -28,6 +29,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Properties;
 
 /**
  * Class for handling the iso message request.
@@ -35,7 +37,7 @@ import java.net.Socket;
 public class ConnectionRequestHandler implements Runnable {
     private static final Log log = LogFactory.getLog(ConnectionRequestHandler.class);
     private Socket connection;
-    private ISOPackager packager;
+    private ISOBasePackager packager;
     private ISO8583MessageInject msgInject;
     private DataInputStream inputStreamReader;
     private DataOutputStream outToClient;
@@ -43,7 +45,7 @@ public class ConnectionRequestHandler implements Runnable {
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
             this.connection = connection;
-            this.packager = ISO8583PackagerFactory.getPackager();
+            this.packager = ISO8583PackagerFactory.getPackagerWithParams(params);
             this.msgInject = new ISO8583MessageInject(params, connection);
             this.inputStreamReader = new DataInputStream(connection.getInputStream());
             this.outToClient = new DataOutputStream(connection.getOutputStream());

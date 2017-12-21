@@ -78,8 +78,7 @@ public class ISO8583MessageInject {
         try {
             OMElement parentElement = messageBuilder(object);
             msgCtx.getEnvelope().getBody().addChild(parentElement);
-            ISO8583ReplySender replySender = new ISO8583ReplySender(connection);
-            replySender.sendBack(msgCtx);
+            ISO8583ReplySender replySender = new ISO8583ReplySender(connection, params);
             if (seq != null) {
                 seq.setErrorHandler(onErrorSeq);
                 if (log.isDebugEnabled()) {
@@ -89,6 +88,7 @@ public class ISO8583MessageInject {
             } else {
                 log.error("Sequence: " + injectingSeq + " not found");
             }
+            replySender.sendBack(msgCtx);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -119,6 +119,9 @@ public class ISO8583MessageInject {
     private OMElement messageBuilder(ISOMsg isomsg) {
         OMFactory OMfactory = OMAbstractFactory.getOMFactory();
         OMElement parentElement = OMfactory.createOMElement(ISO8583Constant.TAG_MSG, null);
+        OMElement header = OMfactory.createOMElement(ISO8583Constant.HEADER, null);
+        header.setText(new String(isomsg.getHeader()));
+        parentElement.addChild(header);
         OMElement result = OMfactory.createOMElement(ISO8583Constant.TAG_DATA, null);
         for (int i = 0; i <= isomsg.getMaxField(); i++) {
             if (isomsg.hasField(i)) {

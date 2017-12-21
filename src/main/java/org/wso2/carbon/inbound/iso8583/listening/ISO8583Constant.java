@@ -19,11 +19,11 @@ package org.wso2.carbon.inbound.iso8583.listening;
  * Class ISO8583Constant defines all constants used for ISO8583 inbound.
  */
 public class ISO8583Constant {
+    public final static String HEADER = "header";
     public final static String TAG_FIELD = "field";
     public final static String TAG_MSG = "ISOMessage";
     public final static String TAG_DATA = "data";
     public final static String TAG_ID = "id";
-    public static final String INBOUND_SEQUENTIAL = "sequential";
     public static final String PORT = "port";
     public static final String PACKAGER = "jposdef.xml";
     public static final String CORE_THREADS = "1";
@@ -34,6 +34,9 @@ public class ISO8583Constant {
     public static final String INBOUND_MAX_THREADS = "maxThreads";
     public static final String INBOUND_THREAD_ALIVE = "keepAlive";
     public static final String INBOUND_THREAD_QLEN = "queueLength";
+    public static final String INBOUND_SEQUENTIAL = "sequential";
+    public static final String INBOUND_HEADER_LENGTH = "headerLength";
+    public static final String INBOUND_ACT_AS_PROXY = "isProxy";
     public final static String ISO8583_INBOUND_MSG_ID = "ISO8583_INBOUND_MSG_ID";
     public final static String PROPERTIES_FILE = "config.properties";
     public static final String RESPONSE_FIELD = "responseField";
