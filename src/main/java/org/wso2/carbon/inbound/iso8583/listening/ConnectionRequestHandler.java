@@ -16,11 +16,11 @@
 
 package org.wso2.carbon.inbound.iso8583.listening;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.inbound.InboundProcessorParams;
-import org.jpos.iso.ISOBasePackager;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
@@ -37,15 +37,21 @@ import java.util.Properties;
 public class ConnectionRequestHandler implements Runnable {
     private static final Log log = LogFactory.getLog(ConnectionRequestHandler.class);
     private Socket connection;
-    private ISOBasePackager packager;
+    private ISOPackager packager;
     private ISO8583MessageInject msgInject;
     private DataInputStream inputStreamReader;
     private DataOutputStream outToClient;
+    private int headerLength = 0;
+    private byte[] header;
 
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
             this.connection = connection;
-            this.packager = ISO8583PackagerFactory.getPackagerWithParams(params);
+            Properties properties = params.getProperties();
+            String hLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
+            if (!StringUtils.isEmpty(hLength))
+                this.headerLength = Integer.parseInt(hLength);
+            this.packager = ISO8583PackagerFactory.getPackager();
             this.msgInject = new ISO8583MessageInject(params, connection);
             this.inputStreamReader = new DataInputStream(connection.getInputStream());
             this.outToClient = new DataOutputStream(connection.getOutputStream());
@@ -59,10 +65,38 @@ public class ConnectionRequestHandler implements Runnable {
      */
     public void connect() throws IOException {
         if (connection.isConnected()) {
-            String fromClient = inputStreamReader.readUTF();
-            outToClient.writeBytes("ISOMessage from " + Thread.currentThread().getName() + " is consumed :");
-            ISOMsg isoMessage = unpackRequest(fromClient);
-            msgInject.inject(isoMessage);
+            try {
+                String fromClient = "";
+                if (headerLength == 2 || headerLength == 4) {
+                    int len = getMessageLength(headerLength);
+                    byte[] b = new byte[len];
+                    getMessage(b, 0, len);
+                    fromClient = new String(b);
+                } else {
+                    fromClient = inputStreamReader.readUTF();
+                }
+                ISOMsg isoMessage = unpackRequest(fromClient);
+                isoMessage.setHeader(header);
+                msgInject.inject(isoMessage);
+            } catch (ISOException e) {
+                handleException("Couldn't read length of the message ", e);
+            }
+        }
+    }
+
+    protected void getMessage(byte[] b, int offset, int len) throws IOException, ISOException {
+        inputStreamReader.readFully(b, offset, len);
+    }
+
+    protected int getMessageLength(int hLen) throws IOException, ISOException {
+        if (hLen == 4) {
+            header = new byte[4];
+            inputStreamReader.readFully(header, 0, 4);
+            return (header[0] & 0xFF) << 24 | (header[1] & 0xFF) << 16 | (header[2] & 0xFF) << 8 | header[3] & 0xFF;
+        } else {
+            header = new byte[2];
+            inputStreamReader.readFully(header, 0, 2);
+            return (header[0] & 0xFF) << 8 | header[1] & 0xFF;
         }
     }
 

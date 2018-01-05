@@ -33,6 +33,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -85,9 +86,10 @@ public class ISO8583ReplySender implements InboundResponseSender {
             }
             ISOMsg isoMsg = new ISOMsg();
             isoMsg.setPackager(packager);
-            String header = getElements.getFirstChildWithName(
-                    new QName(ISO8583Constant.HEADER)).getText();
-            isoMsg.setHeader(header.getBytes());
+            if (packager.getHeaderLength() > 0) {
+                String header = getElements.getFirstChildWithName(new QName(ISO8583Constant.HEADER)).getText();
+                isoMsg.setHeader(Base64.getDecoder().decode(header));
+            }
             Iterator fields = getElements.getFirstChildWithName(
                     new QName(ISO8583Constant.TAG_DATA)).getChildrenWithLocalName(ISO8583Constant.TAG_FIELD);
             while (fields.hasNext()) {

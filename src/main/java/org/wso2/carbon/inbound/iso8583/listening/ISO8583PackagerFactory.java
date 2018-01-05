@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.inbound.iso8583.listening;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.SynapseException;
@@ -48,8 +49,10 @@ public class ISO8583PackagerFactory {
         ISOBasePackager packager = null;
         try {
             Properties properties = params.getProperties();
-            int headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
-            headerLength = headerLength > -1 ? headerLength : 0;
+            int headerLength = 0;
+            String hLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
+            if (!StringUtils.isEmpty(hLength))
+                headerLength = Integer.parseInt(hLength);
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER));
             packager.setHeaderLength(headerLength);
