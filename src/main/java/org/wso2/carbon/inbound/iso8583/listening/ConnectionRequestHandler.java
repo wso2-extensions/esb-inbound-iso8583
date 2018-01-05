@@ -48,9 +48,9 @@ public class ConnectionRequestHandler implements Runnable {
         try {
             this.connection = connection;
             Properties properties = params.getProperties();
-            String hLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
-            if (!StringUtils.isEmpty(hLength))
-                this.headerLength = Integer.parseInt(hLength);
+            if (!StringUtils.isEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
+                this.headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
+            }
             this.packager = ISO8583PackagerFactory.getPackager();
             this.msgInject = new ISO8583MessageInject(params, connection);
             this.inputStreamReader = new DataInputStream(connection.getInputStream());
@@ -67,11 +67,17 @@ public class ConnectionRequestHandler implements Runnable {
         if (connection.isConnected()) {
             try {
                 String fromClient = "";
+                /*
+                jpos sever supports the ISO message with the HeaderLength 0,2 and 4.
+                If the headerLength is 2 or 4, get the ISO message Length from the header value
+                and then read ISO message as byte using that messageLength.
+                Otherwise(headerLength=0) read the ISO message as String.
+                 */
                 if (headerLength == 2 || headerLength == 4) {
-                    int len = getMessageLength(headerLength);
-                    byte[] b = new byte[len];
-                    getMessage(b, 0, len);
-                    fromClient = new String(b);
+                    int messageLength = getMessageLength(headerLength);
+                    byte[] message = new byte[messageLength];
+                    getMessage(message, 0, messageLength);
+                    fromClient = new String(message);
                 } else {
                     fromClient = inputStreamReader.readUTF();
                 }
@@ -84,12 +90,12 @@ public class ConnectionRequestHandler implements Runnable {
         }
     }
 
-    protected void getMessage(byte[] b, int offset, int len) throws IOException, ISOException {
-        inputStreamReader.readFully(b, offset, len);
+    protected void getMessage(byte[] message, int offset, int len) throws IOException, ISOException {
+        inputStreamReader.readFully(message, offset, len);
     }
 
-    protected int getMessageLength(int hLen) throws IOException, ISOException {
-        if (hLen == 4) {
+    protected int getMessageLength(int headerLength) throws IOException, ISOException {
+        if (headerLength == 4) {
             header = new byte[4];
             inputStreamReader.readFully(header, 0, 4);
             return (header[0] & 0xFF) << 24 | (header[1] & 0xFF) << 16 | (header[2] & 0xFF) << 8 | header[3] & 0xFF;

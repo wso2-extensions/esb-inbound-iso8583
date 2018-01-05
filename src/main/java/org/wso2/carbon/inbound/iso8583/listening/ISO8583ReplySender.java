@@ -80,7 +80,6 @@ public class ISO8583ReplySender implements InboundResponseSender {
             } else {
                 getElements = soapEnvelope.getBody().getFirstElement();
             }
-
             if (getElements == null) {
                 handleException("Failed to get response message", null);
             }
@@ -111,13 +110,13 @@ public class ISO8583ReplySender implements InboundResponseSender {
                 /* Set the response fields */
                 if (isoMsg.getMTI().equals(properties.getProperty((String) ISO8583Constant.REQUEST_MTI))) {
                     isoMsg.setMTI((properties.getProperty((String) ISO8583Constant.RESPONSE_MTI)));
-                /* Set the code for successful response */
+                    /* Set the code for successful response */
                     isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
                             properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE));
                     byte[] msg = isoMsg.pack();
                     responseMessage = new String(msg).toUpperCase();
                 } else {
-                /* Set the code for invalid transaction response */
+                    /* Set the code for invalid transaction response */
                     isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
                             properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE));
                     byte[] msg = isoMsg.pack();
@@ -186,7 +185,6 @@ public class ISO8583ReplySender implements InboundResponseSender {
     private boolean isProxy() {
         Properties properties = this.params.getProperties();
         boolean isProxy = Boolean.parseBoolean(properties.getProperty(ISO8583Constant.INBOUND_ACT_AS_PROXY));
-
         return  isProxy;
     }
 }

@@ -50,16 +50,16 @@ public class ISO8583PackagerFactory {
         try {
             Properties properties = params.getProperties();
             int headerLength = 0;
-            String hLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
-            if (!StringUtils.isEmpty(hLength))
-                headerLength = Integer.parseInt(hLength);
+            if (!StringUtils.isEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
+                headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
+            }
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER));
             packager.setHeaderLength(headerLength);
         } catch (NumberFormatException e) {
-            handleException("One of the properties are of an invalid type", e);
+            handleException("One of the properties is invalid type", e);
         } catch (ISOException e) {
-            handleException("Error while get the ISOPackager", e);
+            handleException("Error while getting the ISOPackager", e);
         }
         return packager;
     }
