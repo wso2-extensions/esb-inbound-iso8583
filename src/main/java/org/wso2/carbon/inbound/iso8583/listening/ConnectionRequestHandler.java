@@ -31,6 +31,7 @@ import java.net.Socket;
 
 /**
  * Class for handling the iso message request.
+ * @since 1.0.1
  */
 public class ConnectionRequestHandler implements Runnable {
     private static final Log log = LogFactory.getLog(ConnectionRequestHandler.class);
@@ -40,6 +41,11 @@ public class ConnectionRequestHandler implements Runnable {
     private DataInputStream inputStreamReader;
     private DataOutputStream outToClient;
 
+    /**
+     * connectionRequestHandler method to handle socket connections with InboundProcessorParams.
+     * @param connection socket connection
+     * @param params InboundProcessor params
+     */
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
             this.connection = connection;

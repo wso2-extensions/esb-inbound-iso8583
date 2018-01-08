@@ -133,7 +133,7 @@ public class ISO8583ReplySender implements InboundResponseSender {
                 if (resourceStream != null)
                     resourceStream.close();
             } catch (IOException e) {
-                log.error("Couldn't close the inputStream");
+                log.error("Couldn't close the inputStream", e);
             }
         }
         return prop;

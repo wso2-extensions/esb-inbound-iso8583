@@ -54,8 +54,8 @@ public class ISO8583MessageConnection extends Thread {
         String threadSafeTime = properties.getProperty(ISO8583Constant.INBOUND_THREAD_ALIVE);
         String queueLength = properties.getProperty(ISO8583Constant.INBOUND_THREAD_QLEN);
         try {
-            if ((!StringUtils.isEmpty(coreThreads)) && (!StringUtils.isEmpty(maxThreads)) &&
-                    (!StringUtils.isEmpty(threadSafeTime)) && (!StringUtils.isEmpty(queueLength))) {
+            if ((StringUtils.isNotEmpty(coreThreads)) && (StringUtils.isNotEmpty(maxThreads)) &&
+                    (StringUtils.isNotEmpty(threadSafeTime)) && (StringUtils.isNotEmpty(queueLength))) {
                 BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(Integer.parseInt(queueLength));
                 threadPool = new ThreadPoolExecutor(Integer.parseInt(coreThreads), Integer.parseInt(maxThreads)
                         , Integer.parseInt(threadSafeTime), TimeUnit.SECONDS, workQueue);
@@ -128,7 +128,7 @@ public class ISO8583MessageConnection extends Thread {
             threadPool.execute(new ConnectionRequestHandler(connection, params));
         } catch (RejectedExecutionException re) {
             // If the pool is full complete the execution with the same thread
-            log.warn("Worker pool has reached the maximum capacity.");
+            log.warn("Worker pool has reached the maximum capacity.", re);
         }
     }
 

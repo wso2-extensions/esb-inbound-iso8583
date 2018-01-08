@@ -25,6 +25,7 @@ import java.util.Properties;
 
 /**
  * Class for consume iso8583 financial request
+ * @since 1.0.1
  */
 public class ISO8583MessageConsumer extends GenericInboundListener {
     private static final Log log = LogFactory.getLog(ISO8583MessageConsumer.class);
@@ -54,6 +55,3 @@ public class ISO8583MessageConsumer extends GenericInboundListener {
         messageConnection.destroyConnection();
     }
 }
-
-
-
