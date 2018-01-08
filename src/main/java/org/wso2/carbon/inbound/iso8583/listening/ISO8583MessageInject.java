@@ -123,7 +123,7 @@ public class ISO8583MessageInject {
         OMFactory OMfactory = OMAbstractFactory.getOMFactory();
         OMElement parentElement = OMfactory.createOMElement(ISO8583Constant.TAG_MSG, null);
         String headerLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
-        if (!StringUtils.isEmpty(headerLength)) {
+        if (StringUtils.isNotEmpty(headerLength)) {
             if (Integer.parseInt(headerLength) > 0) {
                 OMElement header = OMfactory.createOMElement(ISO8583Constant.HEADER, null);
                 header.setText(Base64.getEncoder().encodeToString(isomsg.getHeader()));

@@ -48,7 +48,7 @@ public class ConnectionRequestHandler implements Runnable {
         try {
             this.connection = connection;
             Properties properties = params.getProperties();
-            if (!StringUtils.isEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
+            if (StringUtils.isNotEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
                 this.headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
             }
             this.packager = ISO8583PackagerFactory.getPackager();
@@ -90,10 +90,25 @@ public class ConnectionRequestHandler implements Runnable {
         }
     }
 
-    protected void getMessage(byte[] message, int offset, int len) throws IOException, ISOException {
-        inputStreamReader.readFully(message, offset, len);
+    /**
+     * Get the ISO message from the input steam reader
+     * @param message the buffer into which the message is read
+     * @param offset the start offset of the message.
+     * @param length the length of the message
+     * @throws IOException
+     * @throws ISOException
+     */
+    protected void getMessage(byte[] message, int offset, int length) throws IOException, ISOException {
+        inputStreamReader.readFully(message, offset, length);
     }
 
+    /**
+     * Get the message length
+     * @param headerLength the length oh the header
+     * @return
+     * @throws IOException
+     * @throws ISOException
+     */
     protected int getMessageLength(int headerLength) throws IOException, ISOException {
         if (headerLength == 4) {
             header = new byte[4];

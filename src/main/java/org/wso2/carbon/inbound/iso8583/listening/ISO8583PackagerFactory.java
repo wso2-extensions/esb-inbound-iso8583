@@ -45,12 +45,17 @@ public class ISO8583PackagerFactory {
         return packager;
     }
 
+    /**
+     * Get the ISOPackager
+     * @param params the inbound parameters
+     * @return
+     */
     public static ISOBasePackager getPackagerWithParams(InboundProcessorParams params) {
         ISOBasePackager packager = null;
         try {
             Properties properties = params.getProperties();
             int headerLength = 0;
-            if (!StringUtils.isEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
+            if (StringUtils.isNotEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
                 headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
             }
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
