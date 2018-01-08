@@ -71,6 +71,11 @@ public class ISO8583ReplySender implements InboundResponseSender {
             //Retrieve the SOAP envelope from the MessageContext
             SOAPEnvelope soapEnvelope = messageContext.getEnvelope();
             OMElement getElements = null;
+            /* isProxy defines whether this inbound is acting as a proxy for
+                another backend service or processing the message itself.
+                if the inbound endpoint act as a proxy to another service
+                pack the ISO message without change any field
+             */
             if (isProxy()) {
                 Iterator<OMElement> iterator = soapEnvelope.getBody().getChildrenWithName(
                         new QName(ISO8583Constant.TAG_MSG));

@@ -66,14 +66,14 @@ public class ConnectionRequestHandler implements Runnable {
     public void connect() throws IOException {
         if (connection.isConnected()) {
             try {
-                String fromClient = "";
+                String fromClient;
                 /*
                 jpos sever supports the ISO message with the HeaderLength 0,2 and 4.
                 If the headerLength is 2 or 4, get the ISO message Length from the header value
                 and then read ISO message as byte using that messageLength.
                 Otherwise(headerLength=0) read the ISO message as String.
                  */
-                if (headerLength == 2 || headerLength == 4) {
+                if (headerLength != 0) {
                     int messageLength = getMessageLength(headerLength);
                     byte[] message = new byte[messageLength];
                     getMessage(message, 0, messageLength);
@@ -97,6 +97,10 @@ public class ConnectionRequestHandler implements Runnable {
     protected int getMessageLength(int headerLength) throws IOException, ISOException {
         if (headerLength == 4) {
             header = new byte[4];
+            /*
+             The size of the message will be sent by the client using the first 4 bytes of the header.
+              Get that header and decoding it and getting the message size
+             */
             inputStreamReader.readFully(header, 0, 4);
             return (header[0] & 0xFF) << 24 | (header[1] & 0xFF) << 16 | (header[2] & 0xFF) << 8 | header[3] & 0xFF;
         } else {
