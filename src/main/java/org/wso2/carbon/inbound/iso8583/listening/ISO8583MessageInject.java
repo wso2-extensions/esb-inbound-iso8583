@@ -20,6 +20,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.context.MessageContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -32,6 +33,7 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.net.Socket;
+import java.util.Base64;
 import java.util.Properties;
 
 /**
@@ -45,11 +47,12 @@ public class ISO8583MessageInject {
     private final SynapseEnvironment synapseEnvironment;
     private InboundProcessorParams params;
     private Socket connection;
+    private Properties properties;
 
     public ISO8583MessageInject(InboundProcessorParams params, Socket connection) {
         this.params = params;
         this.connection = connection;
-        Properties properties = params.getProperties();
+        this.properties = params.getProperties();
         this.injectingSeq = params.getInjectingSeq();
         this.onErrorSeq = params.getOnErrorSeq();
         this.sequential = Boolean.parseBoolean(properties.getProperty(ISO8583Constant.INBOUND_SEQUENTIAL));
@@ -78,8 +81,7 @@ public class ISO8583MessageInject {
         try {
             OMElement parentElement = messageBuilder(object);
             msgCtx.getEnvelope().getBody().addChild(parentElement);
-            ISO8583ReplySender replySender = new ISO8583ReplySender(connection);
-            replySender.sendBack(msgCtx);
+            ISO8583ReplySender replySender = new ISO8583ReplySender(connection, params);
             if (seq != null) {
                 seq.setErrorHandler(onErrorSeq);
                 if (log.isDebugEnabled()) {
@@ -89,6 +91,7 @@ public class ISO8583MessageInject {
             } else {
                 log.error("Sequence: " + injectingSeq + " not found");
             }
+            replySender.sendBack(msgCtx);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -119,6 +122,14 @@ public class ISO8583MessageInject {
     private OMElement messageBuilder(ISOMsg isomsg) {
         OMFactory OMfactory = OMAbstractFactory.getOMFactory();
         OMElement parentElement = OMfactory.createOMElement(ISO8583Constant.TAG_MSG, null);
+        String headerLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
+        if (StringUtils.isNotEmpty(headerLength)) {
+            if (Integer.parseInt(headerLength) > 0) {
+                OMElement header = OMfactory.createOMElement(ISO8583Constant.HEADER, null);
+                header.setText(Base64.getEncoder().encodeToString(isomsg.getHeader()));
+                parentElement.addChild(header);
+            }
+        }
         OMElement result = OMfactory.createOMElement(ISO8583Constant.TAG_DATA, null);
         for (int i = 0; i <= isomsg.getMaxField(); i++) {
             if (isomsg.hasField(i)) {

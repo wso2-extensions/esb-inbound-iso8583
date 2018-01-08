@@ -21,7 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
+import org.apache.synapse.inbound.InboundProcessorParams;
 import org.apache.synapse.inbound.InboundResponseSender;
+import org.jpos.iso.ISOBasePackager;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.ISOPackager;
@@ -31,6 +33,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -42,14 +45,16 @@ public class ISO8583ReplySender implements InboundResponseSender {
     private static final Log log = LogFactory.getLog(ISO8583ReplySender.class.getName());
 
     private Socket connection;
+    private InboundProcessorParams params;
 
     /**
      * keep the socket connection to send the response back to client.
      *
      * @param connection created socket connection.
      */
-    public ISO8583ReplySender(Socket connection) {
+    public ISO8583ReplySender(Socket connection, InboundProcessorParams params) {
         this.connection = connection;
+        this.params = params;
     }
 
     /**
@@ -61,13 +66,34 @@ public class ISO8583ReplySender implements InboundResponseSender {
     public void sendBack(MessageContext messageContext) {
         String responseMessage = null;
         try {
-            ISOPackager packager = ISO8583PackagerFactory.getPackager();
+            ISOBasePackager packager = ISO8583PackagerFactory.getPackagerWithParams(params);
             Properties properties = getPropertiesFile();
             //Retrieve the SOAP envelope from the MessageContext
             SOAPEnvelope soapEnvelope = messageContext.getEnvelope();
-            OMElement getElements = soapEnvelope.getBody().getFirstElement();
+            OMElement getElements = null;
+            /* isProxy defines whether this inbound is acting as a proxy for
+                another backend service or processing the message itself.
+                if the inbound endpoint act as a proxy to another service
+                pack the ISO message without change any field
+             */
+            if (isProxy()) {
+                Iterator<OMElement> iterator = soapEnvelope.getBody().getChildrenWithName(
+                        new QName(ISO8583Constant.TAG_MSG));
+                while (iterator.hasNext()) {
+                    getElements = iterator.next();
+                }
+            } else {
+                getElements = soapEnvelope.getBody().getFirstElement();
+            }
+            if (getElements == null) {
+                handleException("Failed to get response message", null);
+            }
             ISOMsg isoMsg = new ISOMsg();
             isoMsg.setPackager(packager);
+            if (packager.getHeaderLength() > 0) {
+                String header = getElements.getFirstChildWithName(new QName(ISO8583Constant.HEADER)).getText();
+                isoMsg.setHeader(Base64.getDecoder().decode(header));
+            }
             Iterator fields = getElements.getFirstChildWithName(
                     new QName(ISO8583Constant.TAG_DATA)).getChildrenWithLocalName(ISO8583Constant.TAG_FIELD);
             while (fields.hasNext()) {
@@ -81,20 +107,26 @@ public class ISO8583ReplySender implements InboundResponseSender {
                     log.warn("The fieldID does not contain a parsable integer" + e.getMessage(), e);
                 }
             }
-            /* Set the response fields */
-            if (isoMsg.getMTI().equals(properties.getProperty((String) ISO8583Constant.REQUEST_MTI))) {
-                isoMsg.setMTI((properties.getProperty((String) ISO8583Constant.RESPONSE_MTI)));
-                /* Set the code for successful response */
-                isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
-                        properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE));
+
+            if (isProxy()) {
                 byte[] msg = isoMsg.pack();
                 responseMessage = new String(msg).toUpperCase();
             } else {
-                /* Set the code for invalid transaction response */
-                isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
-                        properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE));
-                byte[] msg = isoMsg.pack();
-                responseMessage = new String(msg).toUpperCase();
+                /* Set the response fields */
+                if (isoMsg.getMTI().equals(properties.getProperty((String) ISO8583Constant.REQUEST_MTI))) {
+                    isoMsg.setMTI((properties.getProperty((String) ISO8583Constant.RESPONSE_MTI)));
+                    /* Set the code for successful response */
+                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
+                            properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE));
+                    byte[] msg = isoMsg.pack();
+                    responseMessage = new String(msg).toUpperCase();
+                } else {
+                    /* Set the code for invalid transaction response */
+                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
+                            properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE));
+                    byte[] msg = isoMsg.pack();
+                    responseMessage = new String(msg).toUpperCase();
+                }
             }
         } catch (ISOException e) {
             handleException("Couldn't packed ISO8583 Messages", e);
@@ -148,5 +180,16 @@ public class ISO8583ReplySender implements InboundResponseSender {
     private void handleException(String msg, Exception e) {
         log.error(msg, e);
         throw new SynapseException(msg);
+    }
+
+    /**
+     * Is this inbound endpoint act as a proxy to another service
+     *
+     * @return act as a proxy or not
+     */
+    private boolean isProxy() {
+        Properties properties = this.params.getProperties();
+        boolean isProxy = Boolean.parseBoolean(properties.getProperty(ISO8583Constant.INBOUND_ACT_AS_PROXY));
+        return  isProxy;
     }
 }
