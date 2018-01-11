@@ -122,13 +122,10 @@ public class ISO8583MessageInject {
     private OMElement messageBuilder(ISOMsg isomsg) {
         OMFactory OMfactory = OMAbstractFactory.getOMFactory();
         OMElement parentElement = OMfactory.createOMElement(ISO8583Constant.TAG_MSG, null);
-        String headerLength = properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH);
-        if (StringUtils.isNotEmpty(headerLength)) {
-            if (Integer.parseInt(headerLength) > 0) {
-                OMElement header = OMfactory.createOMElement(ISO8583Constant.HEADER, null);
-                header.setText(Base64.getEncoder().encodeToString(isomsg.getHeader()));
-                parentElement.addChild(header);
-            }
+        if (isomsg.getHeader() != null) {
+            OMElement header = OMfactory.createOMElement(ISO8583Constant.HEADER, null);
+            header.setText(Base64.getEncoder().encodeToString(isomsg.getHeader()));
+            parentElement.addChild(header);
         }
         OMElement result = OMfactory.createOMElement(ISO8583Constant.TAG_DATA, null);
         for (int i = 0; i <= isomsg.getMaxField(); i++) {

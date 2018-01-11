@@ -47,11 +47,7 @@ public class ConnectionRequestHandler implements Runnable {
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
             this.connection = connection;
-            Properties properties = params.getProperties();
-            if (StringUtils.isNotEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
-                this.headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
-            }
-            this.packager = ISO8583PackagerFactory.getPackager();
+            this.packager = ISO8583PackagerFactory.getPackagerWithParams(params);
             this.msgInject = new ISO8583MessageInject(params, connection);
             this.inputStreamReader = new DataInputStream(connection.getInputStream());
             this.outToClient = new DataOutputStream(connection.getOutputStream());
@@ -66,62 +62,15 @@ public class ConnectionRequestHandler implements Runnable {
     public void connect() throws IOException {
         if (connection.isConnected()) {
             try {
-                String fromClient;
-                /*
-                jpos sever supports the ISO message with the HeaderLength 0,2 and 4.
-                If the headerLength is 2 or 4, get the ISO message Length from the header value
-                and then read ISO message as byte using that messageLength.
-                Otherwise(headerLength=0) read the ISO message as String.
-                 */
-                if (headerLength != 0) {
-                    int messageLength = getMessageLength(headerLength);
-                    byte[] message = new byte[messageLength];
-                    getMessage(message, 0, messageLength);
-                    fromClient = new String(message);
-                } else {
-                    fromClient = inputStreamReader.readUTF();
-                }
-                ISOMsg isoMessage = unpackRequest(fromClient);
-                isoMessage.setHeader(header);
+                Thread.sleep(100);
+                int messageLength = inputStreamReader.available();
+                byte[] message = new byte[messageLength];
+                inputStreamReader.readFully(message, 0, messageLength);
+                ISOMsg isoMessage = unpackRequest(message);
                 msgInject.inject(isoMessage);
-            } catch (ISOException e) {
-                handleException("Couldn't read length of the message ", e);
+            } catch (InterruptedException e) {
+                handleException("Unable to read the input streams ", e);
             }
-        }
-    }
-
-    /**
-     * Get the ISO message from the input steam reader
-     * @param message the buffer into which the message is read
-     * @param offset the start offset of the message.
-     * @param length the length of the message
-     * @throws IOException
-     * @throws ISOException
-     */
-    protected void getMessage(byte[] message, int offset, int length) throws IOException, ISOException {
-        inputStreamReader.readFully(message, offset, length);
-    }
-
-    /**
-     * Get the message length
-     * @param headerLength the length oh the header
-     * @return
-     * @throws IOException
-     * @throws ISOException
-     */
-    protected int getMessageLength(int headerLength) throws IOException, ISOException {
-        if (headerLength == 4) {
-            header = new byte[4];
-            /*
-             The size of the message will be sent by the client using the first 4 bytes of the header.
-              Get that header and decoding it and getting the message size
-             */
-            inputStreamReader.readFully(header, 0, 4);
-            return (header[0] & 0xFF) << 24 | (header[1] & 0xFF) << 16 | (header[2] & 0xFF) << 8 | header[3] & 0xFF;
-        } else {
-            header = new byte[2];
-            inputStreamReader.readFully(header, 0, 2);
-            return (header[0] & 0xFF) << 8 | header[1] & 0xFF;
         }
     }
 
@@ -145,14 +94,14 @@ public class ConnectionRequestHandler implements Runnable {
      *
      * @param message String ISOMessage
      */
-    private ISOMsg unpackRequest(String message) {
+    private ISOMsg unpackRequest(byte[] message) {
         ISOMsg isoMsg = null;
         try {
             isoMsg = new ISOMsg();
             isoMsg.setPackager(packager);
-            isoMsg.unpack(message.getBytes());
+            isoMsg.unpack(message);
         } catch (ISOException e) {
-            handleISOException(message, e);
+            handleISOException(new String(message), e);
         }
         return isoMsg;
     }
