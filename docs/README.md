@@ -1,11 +1,12 @@
-# ISO8583 Inbound
-ISO8583 is a STANDARD message format used in financial transactions through ATM switches. The ISO8583 inbound endpoint allows you to consume the ISO8583 standard message which is sent by simple java client, and then convert it into xml format to access the ISO8583 messages through WSO2 EI.
+# ISO8583 Inbound Endpoint
+
+The ISO8583 inbound endpoint supported via the ESB Profile of WSO2 Enterprise Integrator (WSO2 EI) is a listening inbound endpoint that can consume ISO8583 standard messages.
+ISO8583 is an international messaging standard for financial transaction card originated messages, and is commonly used in transactions between devices such as point-of-sale(POS) terminals and automated teller machines(ATMs).
+Although there are various versions of the ISO8583 standard, the ISO8583 inbound endpoint is developed based on the 1987 version. For more information on the ISO8583 standard, see [ISO8583 Documentation](https://en.wikipedia.org/wiki/ISO_8583).
 
 ## Getting started
-To get started, go to [Configuring ISO8583 Inbound Operation](config.md). Then you can access the ISO8583 messages with the inbound.
+To get started, go to [Configuring ISO8583 Inbound Endpoint Operations](config.md). Once you configure the ISO8583 inbound endpoint, the ESB Profile of WSO2 WSO2 EI can consume ISO8583 messages.
 
-## Additional information
-To download  inbound, go to [https://store.wso2.com/store/assets/esbconnector/details/iso8583](https://store.wso2.com/store/assets/esbconnector/details/e4cf3fd5-445f-4317-beb6-09998906fb0d) , and click Download Streaming Connector to download ISO8583Inbound. Then you can add the inbound jar in your EI instance. The inbound jar file should be copied to <EI_HOME>/lib folder and restarted your EI instance.
 
 | | Version |
 | ------------- |-------------|
