@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.inbound.iso8583.listening;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.SynapseException;
@@ -29,7 +28,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Properties;
+import java.util.Arrays;
 
 /**
  * Class for handling the iso message request.
@@ -41,8 +40,6 @@ public class ConnectionRequestHandler implements Runnable {
     private ISO8583MessageInject msgInject;
     private DataInputStream inputStreamReader;
     private DataOutputStream outToClient;
-    private int headerLength = 0;
-    private byte[] header;
 
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
@@ -60,17 +57,13 @@ public class ConnectionRequestHandler implements Runnable {
      * connect method for read the request from inputStreamReader and inject into sequence.
      */
     public void connect() throws IOException {
-        if (connection.isConnected()) {
-            try {
-                Thread.sleep(100);
-                int messageLength = inputStreamReader.available();
-                byte[] message = new byte[messageLength];
-                inputStreamReader.readFully(message, 0, messageLength);
-                ISOMsg isoMessage = unpackRequest(message);
-                msgInject.inject(isoMessage);
-            } catch (InterruptedException e) {
-                handleException("Unable to read the input streams ", e);
-            }
+        if (connection.isConnected() && inputStreamReader.available() >0) {
+            int messageLength = inputStreamReader.available();
+            byte[] message = new byte[messageLength];
+            inputStreamReader.readFully(message, 0, messageLength);
+            ISOMsg isoMessage = unpackRequest(message);
+            msgInject.inject(isoMessage);
+
         }
     }
 
@@ -101,7 +94,7 @@ public class ConnectionRequestHandler implements Runnable {
             isoMsg.setPackager(packager);
             isoMsg.unpack(message);
         } catch (ISOException e) {
-            handleISOException(new String(message), e);
+            handleISOException(Arrays.toString(message), e);
         }
         return isoMsg;
     }
