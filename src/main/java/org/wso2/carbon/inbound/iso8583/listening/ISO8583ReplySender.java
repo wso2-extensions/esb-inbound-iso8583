@@ -64,27 +64,13 @@ public class ISO8583ReplySender implements InboundResponseSender {
      */
     @Override
     public void sendBack(MessageContext messageContext) {
-        String responseMessage = null;
+        byte[] responseMessage = null;
         try {
             ISOBasePackager packager = ISO8583PackagerFactory.getPackagerWithParams(params);
             Properties properties = getPropertiesFile();
             //Retrieve the SOAP envelope from the MessageContext
             SOAPEnvelope soapEnvelope = messageContext.getEnvelope();
-            OMElement getElements = null;
-            /* isProxy defines whether this inbound is acting as a proxy for
-                another backend service or processing the message itself.
-                if the inbound endpoint act as a proxy to another service
-                pack the ISO message without change any field
-             */
-            if (isProxy()) {
-                Iterator<OMElement> iterator = soapEnvelope.getBody().getChildrenWithName(
-                        new QName(ISO8583Constant.TAG_MSG));
-                while (iterator.hasNext()) {
-                    getElements = iterator.next();
-                }
-            } else {
-                getElements = soapEnvelope.getBody().getFirstElement();
-            }
+            OMElement getElements = soapEnvelope.getBody().getFirstElement();
             if (getElements == null) {
                 handleException("Failed to get response message", null);
             }
@@ -108,9 +94,13 @@ public class ISO8583ReplySender implements InboundResponseSender {
                 }
             }
 
+            /* isProxy defines whether this inbound is acting as a proxy for
+                another backend service or processing the message itself.
+                if the inbound endpoint act as a proxy to another service
+                pack the ISO message without change any field
+             */
             if (isProxy()) {
-                byte[] msg = isoMsg.pack();
-                responseMessage = new String(msg).toUpperCase();
+                responseMessage = isoMsg.pack();
             } else {
                 /* Set the response fields */
                 if (isoMsg.getMTI().equals(properties.getProperty((String) ISO8583Constant.REQUEST_MTI))) {
@@ -118,14 +108,12 @@ public class ISO8583ReplySender implements InboundResponseSender {
                     /* Set the code for successful response */
                     isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
                             properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE));
-                    byte[] msg = isoMsg.pack();
-                    responseMessage = new String(msg).toUpperCase();
+                    responseMessage = isoMsg.pack();
                 } else {
                     /* Set the code for invalid transaction response */
                     isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
                             properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE));
-                    byte[] msg = isoMsg.pack();
-                    responseMessage = new String(msg).toUpperCase();
+                    responseMessage = isoMsg.pack();
                 }
             }
         } catch (ISOException e) {
@@ -137,12 +125,12 @@ public class ISO8583ReplySender implements InboundResponseSender {
     /**
      * writes the packed iso message response to the client.
      *
-     * @param responseMessage String of packed ISO response.
+     * @param responseMessage byte of packed ISO response.
      */
-    private void sendResponse(String responseMessage) {
+    private void sendResponse(byte[] responseMessage) {
         try {
             DataOutputStream outToClient = new DataOutputStream(connection.getOutputStream());
-            outToClient.writeBytes(responseMessage);
+            outToClient.write(responseMessage);
         } catch (IOException e) {
             handleException("OutputStream may be closed ", e);
         }
