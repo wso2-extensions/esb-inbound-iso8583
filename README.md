@@ -8,7 +8,8 @@ Although there are various versions of the ISO8583 standard, the ISO8583 inbound
 
 | Inbound Endpoint version | Supported jpos library version | Supported WSO2 ESB/EI version |
 | ------------- | ---------------|------------- |
-| [1.0.1](https://github.com/wso2-extensions/esb-inbound-iso8583/tree/org.wso2.carbon.inbound.iso8583-1.0.1) | 1.9.4 | EI 6.1.1, EI 6.4.0, EI 6.5.0   |
+| [1.1.0](https://github.com/wso2-extensions/esb-inbound-iso8583/tree/org.wso2.carbon.inbound.iso8583-1.1.0) | 1.9.4 
+| EI 7.1.0   |
 
 
 ## Getting started

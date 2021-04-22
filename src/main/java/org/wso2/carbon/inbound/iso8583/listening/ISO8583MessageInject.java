@@ -108,8 +108,6 @@ public class ISO8583MessageInject {
         axis2MsgCtx.setServerSide(true);
         axis2MsgCtx.setMessageID(UUIDGenerator.getUUID());
         msgCtx.setProperty(MessageContext.CLIENT_API_NON_BLOCKING, true);
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        axis2MsgCtx.setProperty(MultitenantConstants.TENANT_DOMAIN, carbonContext.getTenantDomain());
         return msgCtx;
     }
 
