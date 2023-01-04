@@ -47,6 +47,7 @@ public class ISO8583MessageInject {
     private InboundProcessorParams params;
     private Socket connection;
     private Properties properties;
+    private ISO8583Version iso8583Version;
 
     public ISO8583MessageInject(InboundProcessorParams params, Socket connection) {
         this.params = params;
@@ -80,7 +81,7 @@ public class ISO8583MessageInject {
         try {
             OMElement parentElement = messageBuilder(object);
             msgCtx.getEnvelope().getBody().addChild(parentElement);
-            ISO8583ReplySender replySender = new ISO8583ReplySender(connection, params);
+            ISO8583ReplySender replySender = new ISO8583ReplySender(connection, params, iso8583Version);
             if (seq != null) {
                 seq.setErrorHandler(onErrorSeq);
                 if (log.isDebugEnabled()) {
@@ -136,5 +137,9 @@ public class ISO8583MessageInject {
             }
         }
         return parentElement;
+    }
+
+    public void setIso8583Version(ISO8583Version iso8583Version) {
+        this.iso8583Version = iso8583Version;
     }
 }

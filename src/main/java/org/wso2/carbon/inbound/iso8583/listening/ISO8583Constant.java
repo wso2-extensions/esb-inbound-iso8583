@@ -25,7 +25,8 @@ public class ISO8583Constant {
     public final static String TAG_DATA = "data";
     public final static String TAG_ID = "id";
     public static final String PORT = "port";
-    public static final String PACKAGER = "jposdef.xml";
+    public static final String PACKAGER_V_87 = "jposdefv87.xml";
+    public static final String PACKAGER_V_93 = "jposdefv93.xml";
     public static final String CORE_THREADS = "1";
     public static final String MAX_THREADS = "3";
     public static final String KEEP_ALIVE = "1";
@@ -40,8 +41,12 @@ public class ISO8583Constant {
     public final static String ISO8583_INBOUND_MSG_ID = "ISO8583_INBOUND_MSG_ID";
     public final static String PROPERTIES_FILE = "config.properties";
     public static final String RESPONSE_FIELD = "responseField";
-    public static final String SUCCESSFUL_RESPONSE_CODE = "successfulResponseCode";
-    public static final String FAILURE_RESPONSE_CODE = "failureResponseCode";
-    public static final Object REQUEST_MTI = "requestMTI";
-    public static final Object RESPONSE_MTI = "responseMTI";
+    public static final String SUCCESSFUL_RESPONSE_CODE_V87 = "successfulResponseCodev87";
+    public static final String FAILURE_RESPONSE_CODE_V87 = "failureResponseCodev87";
+    public static final String SUCCESSFUL_RESPONSE_CODE_V93 = "successfulResponseCodev93";
+    public static final String FAILURE_RESPONSE_CODE_V93 = "failureResponseCodev93";
+    public static final String MESSAGE_FUNCTION_MTI_INDEX = "messageFunctionMTIIndex";
+    public static final String REQUEST_MESSAGE_FUNCTION_IDENTIFIER = "requestMessageFunctionIdentifier";
+    public static final String REQUEST_RESPONSE_MESSAGE_FUNCTION_IDENTIFIER = "requestResponseMessageFunctionIdentifier";
+
 }
