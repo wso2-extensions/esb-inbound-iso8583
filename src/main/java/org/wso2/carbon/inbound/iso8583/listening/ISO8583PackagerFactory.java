@@ -34,17 +34,6 @@ import java.util.Properties;
 public class ISO8583PackagerFactory {
     private static final Log log = LogFactory.getLog(ISO8583PackagerFactory.class);
 
-    public static ISOPackager getPackager() {
-        ISOPackager packager = null;
-        try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER));
-        } catch (ISOException e) {
-            handleException("Error while get the ISOPackager", e);
-        }
-        return packager;
-    }
-
     /**
      * Get the ISOPackager
      * @param params the inbound parameters
@@ -59,7 +48,32 @@ public class ISO8583PackagerFactory {
                 headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
             }
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER));
+            packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER_V_87));
+            packager.setHeaderLength(headerLength);
+        } catch (NumberFormatException e) {
+            handleException("One of the properties is invalid type", e);
+        } catch (ISOException e) {
+            handleException("Error while getting the ISOPackager", e);
+        }
+        return packager;
+    }
+
+    public static ISOBasePackager getPackagerWithParamsForVersion(InboundProcessorParams params, ISO8583Version iso8583Version) {
+        ISOBasePackager packager = null;
+        try {
+            Properties properties = params.getProperties();
+            int headerLength = 0;
+            if (StringUtils.isNotEmpty(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH))) {
+                headerLength = Integer.parseInt(properties.getProperty(ISO8583Constant.INBOUND_HEADER_LENGTH));
+            }
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            if (iso8583Version == ISO8583Version.NINTEEN_EIGHTY_SEVEN) {
+                packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER_V_87));
+            } else if (iso8583Version == ISO8583Version.NINTEEN_NINTY_THREE) {
+                packager = new GenericPackager(loader.getResourceAsStream(ISO8583Constant.PACKAGER_V_93));
+            } else {
+                throw new UnsupportedOperationException("Provided message format is not supported");
+            }
             packager.setHeaderLength(headerLength);
         } catch (NumberFormatException e) {
             handleException("One of the properties is invalid type", e);

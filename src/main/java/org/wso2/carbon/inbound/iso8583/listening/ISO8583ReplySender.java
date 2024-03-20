@@ -46,15 +46,17 @@ public class ISO8583ReplySender implements InboundResponseSender {
 
     private Socket connection;
     private InboundProcessorParams params;
+    private ISO8583Version iso8583Version;
 
     /**
      * keep the socket connection to send the response back to client.
      *
      * @param connection created socket connection.
      */
-    public ISO8583ReplySender(Socket connection, InboundProcessorParams params) {
+    public ISO8583ReplySender(Socket connection, InboundProcessorParams params, ISO8583Version iso8583Version) {
         this.connection = connection;
         this.params = params;
+        this.iso8583Version = iso8583Version;
     }
 
     /**
@@ -66,7 +68,7 @@ public class ISO8583ReplySender implements InboundResponseSender {
     public void sendBack(MessageContext messageContext) {
         byte[] responseMessage = null;
         try {
-            ISOBasePackager packager = ISO8583PackagerFactory.getPackagerWithParams(params);
+            ISOBasePackager packager = ISO8583PackagerFactory.getPackagerWithParamsForVersion(params, iso8583Version);
             Properties properties = getPropertiesFile();
             //Retrieve the SOAP envelope from the MessageContext
             SOAPEnvelope soapEnvelope = messageContext.getEnvelope();
@@ -103,16 +105,29 @@ public class ISO8583ReplySender implements InboundResponseSender {
                 responseMessage = isoMsg.pack();
             } else {
                 /* Set the response fields */
-                if (isoMsg.getMTI().equals(properties.getProperty((String) ISO8583Constant.REQUEST_MTI))) {
-                    isoMsg.setMTI((properties.getProperty((String) ISO8583Constant.RESPONSE_MTI)));
+                if (isRequestMessageFunction(isoMsg.getMTI())) {
+                    char requestResponseIdentifier =
+                            properties.getProperty(ISO8583Constant.REQUEST_RESPONSE_MESSAGE_FUNCTION_IDENTIFIER).charAt(0);
+                    String mTI = changeMTIMessageFunction(requestResponseIdentifier, isoMsg.getMTI());
+                    isoMsg.setMTI(mTI);
                     /* Set the code for successful response */
-                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
-                            properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE));
+                    String successResponseCode;
+                    if (iso8583Version == ISO8583Version.NINTEEN_EIGHTY_SEVEN) {
+                        successResponseCode = properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE_V87);
+                    } else {
+                        successResponseCode = properties.getProperty(ISO8583Constant.SUCCESSFUL_RESPONSE_CODE_V93);
+                    }
+                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD), successResponseCode);
                     responseMessage = isoMsg.pack();
                 } else {
                     /* Set the code for invalid transaction response */
-                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD),
-                            properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE));
+                    String failureResponseCode;
+                    if (iso8583Version == ISO8583Version.NINTEEN_EIGHTY_SEVEN) {
+                        failureResponseCode = properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE_V87);
+                    } else {
+                        failureResponseCode = properties.getProperty(ISO8583Constant.FAILURE_RESPONSE_CODE_V93);
+                    }
+                    isoMsg.set(properties.getProperty(ISO8583Constant.RESPONSE_FIELD), failureResponseCode);
                     responseMessage = isoMsg.pack();
                 }
             }
@@ -179,5 +194,24 @@ public class ISO8583ReplySender implements InboundResponseSender {
         Properties properties = this.params.getProperties();
         boolean isProxy = Boolean.parseBoolean(properties.getProperty(ISO8583Constant.INBOUND_ACT_AS_PROXY));
         return  isProxy;
+    }
+
+    private boolean isRequestMessageFunction(String mTI) {
+        Properties properties = getPropertiesFile();
+        int index = Integer.parseInt(properties.getProperty(ISO8583Constant.MESSAGE_FUNCTION_MTI_INDEX));
+        String requestIdentifier = properties.getProperty(ISO8583Constant.REQUEST_MESSAGE_FUNCTION_IDENTIFIER);
+        if (mTI.substring(index, index+1).equals(requestIdentifier)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String changeMTIMessageFunction(char c, String mTI) {
+        Properties properties = getPropertiesFile();
+        int index = Integer.parseInt(properties.getProperty(ISO8583Constant.MESSAGE_FUNCTION_MTI_INDEX));
+        StringBuilder sb = new StringBuilder(mTI);
+        sb.setCharAt(index, c);
+        return sb.toString();
     }
 }

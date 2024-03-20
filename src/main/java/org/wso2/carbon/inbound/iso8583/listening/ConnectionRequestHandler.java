@@ -40,6 +40,7 @@ public class ConnectionRequestHandler implements Runnable {
     private ISO8583MessageInject msgInject;
     private DataInputStream inputStreamReader;
     private DataOutputStream outToClient;
+    private InboundProcessorParams parameters;
 
     public ConnectionRequestHandler(Socket connection, InboundProcessorParams params) {
         try {
@@ -48,6 +49,7 @@ public class ConnectionRequestHandler implements Runnable {
             this.msgInject = new ISO8583MessageInject(params, connection);
             this.inputStreamReader = new DataInputStream(connection.getInputStream());
             this.outToClient = new DataOutputStream(connection.getOutputStream());
+            this.parameters = params;
         } catch (IOException e) {
             handleException("Couldn't read the input streams ", e);
         }
@@ -61,7 +63,14 @@ public class ConnectionRequestHandler implements Runnable {
             int messageLength = inputStreamReader.available();
             byte[] message = new byte[messageLength];
             inputStreamReader.readFully(message, 0, messageLength);
+            ISO8583Version iso8583Version = getISO8583Version(message);
+            if (ISO8583Version.NINTEEN_EIGHTY_SEVEN == iso8583Version) {
+                this.packager = ISO8583PackagerFactory.getPackagerWithParamsForVersion(this.parameters, ISO8583Version.NINTEEN_EIGHTY_SEVEN);
+            } else {
+                this.packager = ISO8583PackagerFactory.getPackagerWithParamsForVersion(this.parameters, ISO8583Version.NINTEEN_NINTY_THREE);
+            }
             ISOMsg isoMessage = unpackRequest(message);
+            msgInject.setIso8583Version(iso8583Version);
             msgInject.inject(isoMessage);
 
         }
@@ -122,5 +131,20 @@ public class ConnectionRequestHandler implements Runnable {
     private void handleException(String msg, Exception e) {
         log.error(msg, e);
         throw new SynapseException(msg);
+    }
+
+    private ISO8583Version getISO8583Version (byte[] message) {
+        log.debug("Received ISO message: " + message);
+        Character versionIndicator = new String(message).charAt(0);
+        if (versionIndicator == '0') {
+            log.debug("IS08583 v1987 identified.");
+            return ISO8583Version.NINTEEN_EIGHTY_SEVEN;
+        } else if (versionIndicator == '1') {
+            log.debug("IS08583 v1993 identified.");
+            return ISO8583Version.NINTEEN_NINTY_THREE;
+        } else {
+            log.error("The format of the message is not supported.");
+            throw new UnsupportedOperationException("The format of the message is not supported.");
+        }
     }
 }
