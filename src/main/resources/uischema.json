@@ -1,0 +1,186 @@
+{
+  "name": "iso8583Inbound",
+  "type": "inbound-connector",
+  "title": "ISO8583 Inbound Connector",
+  "help": "Configure the ISO8583 inbound connector for handling financial transactions.",
+  "elements": [
+    {
+      "type": "attribute",
+      "value": {
+        "name": "port",
+        "displayName": "Port",
+        "inputType": "string",
+        "required": "true",
+        "helpTip": "Port number on which to listen for incoming messages."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "packager",
+        "displayName": "Message Packager",
+        "inputType": "combo",
+        "comboValues": [
+          "jposdefv87.xml",
+          "jposdefv93.xml"
+        ],
+        "required": "true",
+        "helpTip": "XML definition for ISO8583 message packager."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "coreThreads",
+        "displayName": "Core Threads",
+        "inputType": "string",
+        "defaultValue": "1",
+        "required": "true",
+        "helpTip": "Number of core threads for handling incoming connections."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "maxThreads",
+        "displayName": "Max Threads",
+        "inputType": "string",
+        "defaultValue": "3",
+        "required": "true",
+        "helpTip": "Maximum number of threads for handling incoming connections."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "keepAlive",
+        "displayName": "Keep Alive Time",
+        "inputType": "string",
+        "defaultValue": "1",
+        "required": "true",
+        "helpTip": "Time (in seconds) that threads beyond the core count remain idle before being terminated."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "queueLength",
+        "displayName": "Queue Length",
+        "inputType": "string",
+        "defaultValue": "1",
+        "required": "true",
+        "helpTip": "Length of the queue that holds tasks before they are executed."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "sequential",
+        "displayName": "Sequential Processing",
+        "inputType": "boolean",
+        "required": "true",
+        "helpTip": "Whether messages should be processed sequentially."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "headerLength",
+        "displayName": "Header Length",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Length of the message header."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "isProxy",
+        "displayName": "Act as Proxy",
+        "inputType": "boolean",
+        "required": "false",
+        "helpTip": "Specify whether the inbound endpoint acts as a proxy."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "responseField",
+        "displayName": "Response Field",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Field to use for the response message."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "successfulResponseCodev87",
+        "displayName": "Success Response Code V87",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Response code for successful transactions in version 87."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "failureResponseCodev87",
+        "displayName": "Failure Response Code V87",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Response code for failed transactions in version 87."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "successfulResponseCodev93",
+        "displayName": "Success Response Code V93",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Response code for successful transactions in version 93."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "failureResponseCodev93",
+        "displayName": "Failure Response Code V93",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Response code for failed transactions in version 93."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "messageFunctionMTIIndex",
+        "displayName": "MTI Function Index",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Index of the Message Type Indicator for identifying the message function."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "requestMessageFunctionIdentifier",
+        "displayName": "Request Message Function Identifier",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Identifier for the request message function."
+      }
+    },
+    {
+      "type": "attribute",
+      "value": {
+        "name": "requestResponseMessageFunctionIdentifier",
+        "displayName": "Response Message Function Identifier",
+        "inputType": "string",
+        "required": "false",
+        "helpTip": "Identifier for the response message function."
+      }
+    }
+  ]
+}
