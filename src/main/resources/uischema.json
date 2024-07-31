@@ -56,7 +56,7 @@
             "value": {
               "name": "suspend",
               "displayName": "Suspend Inbound",
-              "inputType": "boolean",
+              "inputType": "checkbox",
               "defaultValue": false,
               "hidden": true,
               "required": "false",
@@ -98,7 +98,7 @@
             "value": {
               "name": "sequential",
               "displayName": "Execute sequentially",
-              "inputType": "boolean",
+              "inputType": "checkbox",
               "defaultValue": true,
               "required": "false",
               "helpTip": "The behaviour when executing the given sequence."
@@ -109,7 +109,7 @@
             "value": {
               "name": "coordination",
               "displayName": "Coordination",
-              "inputType": "boolean",
+              "inputType": "checkbox",
               "defaultValue": true,
               "required": "false",
               "helpTip": "In a clustered setup, this will run the inbound only in a single worker node."
@@ -120,7 +120,7 @@
             "value": {
               "name": "isProxy",
               "displayName": "Act as a proxy",
-              "inputType": "boolean",
+              "inputType": "checkbox",
               "defaultValue": false,
               "required": "false",
               "helpTip": "ISO8583 Inbound endpoint act as a proxy to another service."
