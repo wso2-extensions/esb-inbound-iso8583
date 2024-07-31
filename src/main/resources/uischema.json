@@ -1,185 +1,205 @@
 {
+  "id": "org.wso2.carbon.inbound.iso8583.listening.ISO8583MessageConsumer",
   "name": "iso8583Inbound",
   "type": "inbound-connector",
   "title": "ISO8583 Inbound Connector",
   "help": "Configure the ISO8583 inbound connector for handling financial transactions.",
   "elements": [
     {
-      "type": "attribute",
+      "type": "attributeGroup",
       "value": {
-        "name": "port",
-        "displayName": "Port",
-        "inputType": "string",
-        "required": "true",
-        "helpTip": "Port number on which to listen for incoming messages."
+        "groupName": "Generic",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "name",
+              "displayName": "Inbound Endpoint Name",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "Unique identifier for the ISO8583 inbound endpoint."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "class",
+              "displayName": "Class Name",
+              "inputType": "string",
+              "required": "true",
+              "hidden": true,
+              "defaultValue": "org.wso2.carbon.inbound.iso8583.listening.ISO8583MessageConsumer"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "sequence",
+              "displayName": "Injecting Sequence Name",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "Sequence to inject the ISO8583 message"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "onError",
+              "displayName": "Error Sequence Name",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "Error sequence to invoke on fault"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "suspend",
+              "displayName": "Suspend Inbound",
+              "inputType": "boolean",
+              "defaultValue": false,
+              "hidden": true,
+              "required": "false",
+              "helpTip": "Suspend Inbound"
+            }
+          }
+        ]
       }
     },
     {
-      "type": "attribute",
+      "type": "attributeGroup",
       "value": {
-        "name": "packager",
-        "displayName": "Message Packager",
-        "inputType": "combo",
-        "comboValues": [
-          "jposdefv87.xml",
-          "jposdefv93.xml"
-        ],
-        "required": "true",
-        "helpTip": "XML definition for ISO8583 message packager."
+        "groupName": "Inbound Functional",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "inbound.behavior",
+              "displayName": "Inbound behavior",
+              "hidden": true,
+              "inputType": "string",
+              "defaultValue": "listening",
+              "required": "true",
+              "helpTip": "Inbound behavior"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "port",
+              "displayName": "Port",
+              "inputType": "string",
+              "required": "true",
+              "helpTip": "Port number on which to listen for incoming messages."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "sequential",
+              "displayName": "Execute sequentially",
+              "inputType": "boolean",
+              "defaultValue": true,
+              "required": "false",
+              "helpTip": "The behaviour when executing the given sequence."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "coordination",
+              "displayName": "Coordination",
+              "inputType": "boolean",
+              "defaultValue": true,
+              "required": "false",
+              "helpTip": "In a clustered setup, this will run the inbound only in a single worker node."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "isProxy",
+              "displayName": "Act as a proxy",
+              "inputType": "boolean",
+              "defaultValue": false,
+              "required": "false",
+              "helpTip": "ISO8583 Inbound endpoint act as a proxy to another service."
+            }
+          }
+        ]
       }
     },
     {
-      "type": "attribute",
+      "type": "attributeGroup",
       "value": {
-        "name": "coreThreads",
-        "displayName": "Core Threads",
-        "inputType": "string",
-        "defaultValue": "1",
-        "required": "true",
-        "helpTip": "Number of core threads for handling incoming connections."
+        "groupName": "ISO8583",
+        "isCollapsed": true,
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "headerLength",
+              "displayName": "Length of the ISO header",
+              "inputType": "string",
+              "defaultValue": "0",
+              "required": "false",
+              "helpTip": "Length of the ISO header"
+            }
+          }
+        ]
       }
     },
     {
-      "type": "attribute",
+      "type": "attributeGroup",
       "value": {
-        "name": "maxThreads",
-        "displayName": "Max Threads",
-        "inputType": "string",
-        "defaultValue": "3",
-        "required": "true",
-        "helpTip": "Maximum number of threads for handling incoming connections."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "keepAlive",
-        "displayName": "Keep Alive Time",
-        "inputType": "string",
-        "defaultValue": "1",
-        "required": "true",
-        "helpTip": "Time (in seconds) that threads beyond the core count remain idle before being terminated."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "queueLength",
-        "displayName": "Queue Length",
-        "inputType": "string",
-        "defaultValue": "1",
-        "required": "true",
-        "helpTip": "Length of the queue that holds tasks before they are executed."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "sequential",
-        "displayName": "Sequential Processing",
-        "inputType": "boolean",
-        "required": "true",
-        "helpTip": "Whether messages should be processed sequentially."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "headerLength",
-        "displayName": "Header Length",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Length of the message header."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "isProxy",
-        "displayName": "Act as Proxy",
-        "inputType": "boolean",
-        "required": "false",
-        "helpTip": "Specify whether the inbound endpoint acts as a proxy."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "responseField",
-        "displayName": "Response Field",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Field to use for the response message."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "successfulResponseCodev87",
-        "displayName": "Success Response Code V87",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Response code for successful transactions in version 87."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "failureResponseCodev87",
-        "displayName": "Failure Response Code V87",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Response code for failed transactions in version 87."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "successfulResponseCodev93",
-        "displayName": "Success Response Code V93",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Response code for successful transactions in version 93."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "failureResponseCodev93",
-        "displayName": "Failure Response Code V93",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Response code for failed transactions in version 93."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "messageFunctionMTIIndex",
-        "displayName": "MTI Function Index",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Index of the Message Type Indicator for identifying the message function."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "requestMessageFunctionIdentifier",
-        "displayName": "Request Message Function Identifier",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Identifier for the request message function."
-      }
-    },
-    {
-      "type": "attribute",
-      "value": {
-        "name": "requestResponseMessageFunctionIdentifier",
-        "displayName": "Response Message Function Identifier",
-        "inputType": "string",
-        "required": "false",
-        "helpTip": "Identifier for the response message function."
+        "groupName": "Thread Pool",
+        "isCollapsed": true,
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "coreThreads",
+              "displayName": "Core Threads",
+              "inputType": "string",
+              "defaultValue": "1",
+              "required": "false",
+              "helpTip": "Number of core threads in the thread pool."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "maxThreads",
+              "displayName": "Maximum Threads",
+              "inputType": "string",
+              "defaultValue": "3",
+              "required": "false",
+              "helpTip": "Maximum number of threads in the thread pool."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "keepAlive",
+              "displayName": "Idle Thread Keep Alive Timeout (s)",
+              "inputType": "string",
+              "defaultValue": "1",
+              "required": "false",
+              "helpTip": "Maximum time that excess idle threads will wait for new tasks before terminating."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "queueLength",
+              "displayName": "Queue Length",
+              "inputType": "string",
+              "defaultValue": "1",
+              "required": "false",
+              "helpTip": "Number of tasks that can be queued before the thread pool starts rejecting tasks."
+            }
+          }
+        ]
       }
     }
   ]
