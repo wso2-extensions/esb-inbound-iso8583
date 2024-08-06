@@ -36,7 +36,7 @@ public class ISO8583MessageConnection extends Thread {
     private ServerSocket server;
     private InboundProcessorParams params;
     private ExecutorService threadPool;
-    private boolean listening = false;
+    private boolean listening = true;
 
     public ISO8583MessageConnection(int port, InboundProcessorParams params) {
         this.port = port;
@@ -79,7 +79,7 @@ public class ISO8583MessageConnection extends Thread {
         try {
             server = new ServerSocket(port);
             log.info("Server is listening on port :" + port);
-            while (!listening) {
+            while (listening) {
                 try {
                     Socket socketConnection = server.accept();
                     if (log.isDebugEnabled()) {
