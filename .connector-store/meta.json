@@ -1,12 +1,13 @@
 {
     "name": "ISO8583 (Inbound)",
     "owner": "WSO2",
-    "category": "Inbound Endpoint",
+    "category": "Developer Tools",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/iso8583-connector/iso8583-connector-overview/",
     "description": "ISO8583 inbound allows you to listen for ISO8583 standard messages through WSO2 ESB",
     "status": "Active",
     "labels": [
-        "ISO"
+        "payments",
+        "inbound-endpoint"
     ],
     "releases": [
         {
