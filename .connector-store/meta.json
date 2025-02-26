@@ -1,6 +1,11 @@
 {
     "name": "ISO8583 (Inbound)",
     "owner": "WSO2",
+    "product": "MI",
+    "mavenGroupId": "org.wso2.integration.inbound",
+    "mavenArtifactId": "mi-inbound-iso8583",
+    "rank": 12,
+    "type": "Inbound",
     "category": "Developer Tools",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/iso8583-connector/iso8583-connector-overview/",
     "description": "ISO8583 inbound allows you to listen for ISO8583 standard messages through WSO2 ESB",
@@ -19,6 +24,8 @@
                 "MI 4.1.0",
                 "MI 4.0.0"
             ],
+            "operations": [],
+            "connections": [],
             "isHidden": false
         },
         {
@@ -29,6 +36,8 @@
                 "MI 4.1.0",
                 "MI 4.0.0"
             ],
+            "operations": [],
+            "connections": [],
             "isHidden": false
         }
     ]

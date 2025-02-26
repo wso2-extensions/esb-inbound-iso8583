@@ -1,9 +1,9 @@
 {
   "id": "org.wso2.carbon.inbound.iso8583.listening.ISO8583MessageConsumer",
   "name": "iso8583Inbound",
-  "type": "inbound-connector",
-  "title": "ISO8583 Inbound Connector",
-  "help": "Configure the ISO8583 inbound connector for handling financial transactions.",
+  "type": "event-integration",
+  "title": "ISO8583",
+  "help": "Configure ISO8583 for handling financial transactions.",
   "elements": [
     {
       "type": "attributeGroup",
@@ -14,10 +14,10 @@
             "type": "attribute",
             "value": {
               "name": "name",
-              "displayName": "Inbound Endpoint Name",
+              "displayName": "Event Integration Name",
               "inputType": "string",
               "required": "true",
-              "helpTip": "Unique identifier for the ISO8583 inbound endpoint."
+              "helpTip": "Unique identifier for the ISO8583 event integration."
             }
           },
           {
@@ -34,10 +34,22 @@
           {
             "type": "attribute",
             "value": {
+              "name": "generateSequences",
+              "displayName": "Automatically generate sequences",
+              "inputType": "checkbox",
+              "defaultValue": true,
+              "required": "true"
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "sequence",
               "displayName": "Injecting Sequence Name",
-              "inputType": "string",
+              "inputType": "keyOrExpression",
+              "keyType": "sequence",
               "required": "true",
+              "enableCondition": [{"generateSequences":false}],
               "helpTip": "Sequence to inject the ISO8583 message"
             }
           },
@@ -46,8 +58,10 @@
             "value": {
               "name": "onError",
               "displayName": "Error Sequence Name",
-              "inputType": "string",
+              "inputType": "keyOrExpression",
+              "keyType": "sequence",
               "required": "true",
+              "enableCondition": [{"generateSequences":false}],
               "helpTip": "Error sequence to invoke on fault"
             }
           },
