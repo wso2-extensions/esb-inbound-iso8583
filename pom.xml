@@ -54,6 +54,10 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
     </dependencies>
     <repositories>
         <repository>
+             <id>mvnrepository</id>
+             <url>https://mvnrepository.com</url>
+        </repository>
+        <repository>
             <id>wso2-maven2-repository</id>
             <url>https://dist.wso2.org/maven2</url>
         </repository>
