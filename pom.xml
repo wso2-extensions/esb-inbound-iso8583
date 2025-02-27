@@ -67,7 +67,7 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
         <repository>
       <id>oracleReleases</id>
       <name>Oracle Released Java Packages</name>
-      <url>http://download.oracle.com/maven</url>
+      <url>https://download.oracle.com/maven</url>
       <layout>default</layout>
     </repository>
         <repository>
