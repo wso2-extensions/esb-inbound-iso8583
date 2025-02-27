@@ -25,11 +25,11 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
     <url>http://wso2.org</url>
     <packaging>bundle</packaging>
     <dependencies>
-         <dependency>
+<!--          <dependency>
              <groupId>com.sleepycat</groupId>
              <artifactId>je</artifactId>
              <version>5.0.73</version>
-         </dependency>
+         </dependency> -->
         <dependency>
             <groupId>org.wso2.carbon.mediation</groupId>
             <artifactId>org.wso2.carbon.inbound.endpoint</artifactId>
@@ -64,6 +64,12 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
             <id>atlassian-contrib</id>
             <url>https://maven.atlassian.com/contrib</url>
         </repository> -->
+        <repository>
+      <id>oracleReleases</id>
+      <name>Oracle Released Java Packages</name>
+      <url>http://download.oracle.com/maven</url>
+      <layout>default</layout>
+    </repository>
         <repository>
             <id>atlassian-proxy</id>
             <url>https://maven.atlassian.com/repository/public</url>
