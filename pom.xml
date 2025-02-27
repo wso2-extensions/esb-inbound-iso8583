@@ -64,6 +64,11 @@ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
             <id>atlassian-proxy</id>
             <url>https://maven.atlassian.com/repository/public</url>
         </repository>
+            <id>oracleReleases</id>
+            <name>Oracle Released Java Packages</name>
+            <url>https://download.oracle.com/maven</url>
+            <layout>default</layout>
+        </repository>
         <repository>
             <id>atlassian-public</id>
             <url>https://maven.atlassian.com/public/</url>
