@@ -4,6 +4,7 @@
     "product": "MI",
     "mavenGroupId": "org.wso2.integration.inbound",
     "mavenArtifactId": "mi-inbound-iso8583",
+    "id": "org.wso2.carbon.inbound.iso8583.listening.ISO8583MessageConsumer",
     "rank": 12,
     "type": "Inbound",
     "category": "Developer Tools",
