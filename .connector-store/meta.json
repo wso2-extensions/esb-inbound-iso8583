@@ -17,7 +17,7 @@
     ],
     "releases": [
         {
-            "tagName": "v1.1.4",
+            "tagName": "v1.1.5",
             "products": [
                 "MI 4.4.0",
                 "MI 4.3.0",
@@ -25,9 +25,128 @@
                 "MI 4.1.0",
                 "MI 4.0.0"
             ],
-            "operations": [],
-            "connections": [],
-            "isHidden": false
+            "operations": [
+                {
+                    "name": "init",
+                    "description": "Initialize Kafka Inbound Endpoint",
+                    "params": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Unique identifier for the ISO8583 event integration."
+                        },
+                        {
+                            "name": "class",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "org.wso2.carbon.inbound.iso8583.listening.ISO8583MessageConsumer",
+                            "description": ""
+                        },
+                        {
+                            "name": "generateSequences",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "True",
+                            "description": ""
+                        },
+                        {
+                            "name": "sequence",
+                            "type": "keyOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Sequence to inject the ISO8583 message"
+                        },
+                        {
+                            "name": "onError",
+                            "type": "keyOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Error sequence to invoke on fault"
+                        },
+                        {
+                            "name": "suspend",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "False",
+                            "description": "Suspend Inbound"
+                        },
+                        {
+                            "name": "inbound.behavior",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "listening",
+                            "description": "Inbound behavior"
+                        },
+                        {
+                            "name": "port",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Port number on which to listen for incoming messages."
+                        },
+                        {
+                            "name": "sequential",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "True",
+                            "description": "The behaviour when executing the given sequence."
+                        },
+                        {
+                            "name": "coordination",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "True",
+                            "description": "In a clustered setup, this will run the inbound only in a single worker node."
+                        },
+                        {
+                            "name": "isProxy",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "False",
+                            "description": "ISO8583 Inbound endpoint act as a proxy to another service."
+                        },
+                        {
+                            "name": "headerLength",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "0",
+                            "description": "Length of the ISO header"
+                        },
+                        {
+                            "name": "coreThreads",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "1",
+                            "description": "Number of core threads in the thread pool."
+                        },
+                        {
+                            "name": "maxThreads",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "3",
+                            "description": "Maximum number of threads in the thread pool."
+                        },
+                        {
+                            "name": "keepAlive",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "1",
+                            "description": "Maximum time that excess idle threads will wait for new tasks before terminating."
+                        },
+                        {
+                            "name": "queueLength",
+                            "type": "string",
+                            "required": false,
+                            "defaultValue": "1",
+                            "description": "Number of tasks that can be queued before the thread pool starts rejecting tasks."
+                        }
+                    ],
+                    "isHidden": false
+                }
+            ],
+            "connections": []
         },
         {
             "tagName": "v1.1.2",
